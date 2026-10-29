@@ -30,7 +30,6 @@ const Footer = () => {
     { name: "Blood Sugar Test", href: "/services" },
     { name: "Full Blood Count", href: "/services" },
     { name: "X-Ray Scan", href: "/services" },
-    { name: "Blood Sugar Test", href: "/services" },
   ];
 
   const socialLinks = [
@@ -94,7 +93,9 @@ const Footer = () => {
               </div>
 
               <div>
-                <h2 className="text-2xl md:text-3xl lg:text-3xl font-bold bg-linear-to-r from-emerald-600 to-green-700 bg-clip-text text-transparent font-['Poppins'] tracking-tight">MediCare</h2>
+                <h2 className="text-2xl md:text-3xl lg:text-3xl font-bold bg-linear-to-r from-emerald-600 to-green-700 bg-clip-text text-transparent font-['Poppins'] tracking-tight">
+                  MediCare
+                </h2>
                 <p className="text-emerald-600 font-serif text-xs md:text-sm font-semibold tracking-wide mt-1">
                   Healthcare Solutions
                 </p>
@@ -132,7 +133,9 @@ const Footer = () => {
           </div>
 
           <div className="lg:col-span-1">
-            <h3 className="text-lg md:text-xl font-bold text-emerald-800 mb-6 relative inline-block">Quick Links</h3>
+            <h3 className="text-lg md:text-xl font-bold text-emerald-800 mb-6 relative inline-block">
+              Quick Links
+            </h3>
             <ul className="space-y-2">
               {quickLinks.map((link, index) => (
                 <li key={link.name} className="w-full">
@@ -153,11 +156,16 @@ const Footer = () => {
           </div>
 
           <div className="lg:col-span-1">
-            <h3 className="text-lg md:text-xl font-bold text-emerald-800 mb-6 relative inline-block">Our Services</h3>
+            <h3 className="text-lg md:text-xl font-bold text-emerald-800 mb-6 relative inline-block">
+              Our Services
+            </h3>
             <ul className="space-y-2">
               {services.map((service) => (
                 <li key={service.name}>
-                  <a href={service.href} className="flex items-center justify-center md:justify-start text-emerald-700 hover:text-green-700 transition-all duration-300 group text-sm md:text-base font-medium py-2 px-3 rounded-lg hover:bg-green-50 border border-transparent hover:border-green-200">
+                  <a
+                    href={service.href}
+                    className="flex items-center justify-center md:justify-start text-emerald-700 hover:text-green-700 transition-all duration-300 group text-sm md:text-base font-medium py-2 px-3 rounded-lg hover:bg-green-50 border border-transparent hover:border-green-200"
+                  >
                     <div className="w-3 h-3 bg-green-500 rounded-full mr-3" />
                     <span>{service.name}</span>
                   </a>
@@ -167,7 +175,9 @@ const Footer = () => {
           </div>
 
           <div className="lg:col-span-1 flex flex-col items-center lg:items-start">
-            <h3 className="text-lg md:text-xl font-bold text-emerald-800 mb-4">Stay Connected</h3>
+            <h3 className="text-lg md:text-xl font-bold text-emerald-800 mb-4">
+              Stay Connected
+            </h3>
             <p className="text-emerald-700 text-sm md:text-base mb-4 font-light text-center lg:text-left">
               Subscribe for health tips, medical updates, and wellness insights
               delivered to your inbox.
@@ -196,9 +206,7 @@ const Footer = () => {
                 />
                 <button className="absolute right-2 xl:px-2 top-2 bg-linear-to-r from-emerald-500 to-green-600 text-white px-4 py-2 rounded-full cursor-pointer transition-all duration-300 transform flex items-center shadow-lg hover:shadow-xl">
                   <Send className="w-4 h-4 mr-2" />
-                  <span className="font-semibold">
-                    Subscribe
-                  </span>
+                  <span className="font-semibold">Subscribe</span>
                 </button>
               </div>
 
@@ -214,7 +222,9 @@ const Footer = () => {
                     style={{ animationDelay: `${index * 120}ms` }}
                   >
                     <div className="absolute inset-0 bg-linear-to-r from-emerald-400 to-green-500 rounded-full transform scale-0 group-hover:scale-110 transition-transform duration-300 hidden lg:block" />
-                    <Icon className={`w-10 h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 p-2 text-emerald-700 cursor-pointer transform hover:scale-110 hover:rotate-6 transition-all duration-300 relative z-10 bg-white rounded-2xl shadow-lg border-2 border-emerald-100 ${color}`} />
+                    <Icon
+                      className={`w-10 h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 p-2 text-emerald-700 cursor-pointer transform hover:scale-110 hover:rotate-6 transition-all duration-300 relative z-10 bg-white rounded-2xl shadow-lg border-2 border-emerald-100 ${color}`}
+                    />
                   </a>
                 ))}
               </div>
