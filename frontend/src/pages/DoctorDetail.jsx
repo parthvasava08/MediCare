@@ -52,15 +52,26 @@ function getScheduleDates(schedule) {
   const today = new Date();
   const todayVal = dateOnlyValue(today);
 
-  const past = parsed
-    .filter((p) => dateOnlyValue(p.date) < todayVal)
-    .sort((a, b) => dateOnlyValue(b.date) - dateOnlyValue(a.date));
-
+  // Only today and later: a hospital cannot book a day that has passed
   const future = parsed
     .filter((p) => dateOnlyValue(p.date) >= todayVal)
     .sort((a, b) => dateOnlyValue(a.date) - dateOnlyValue(b.date));
 
-  return [...past, ...future].map((p) => p.date);
+  return future.map((p) => p.date);
+}
+
+function slotStart(date, slot) {
+  const m = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(String(slot || "").trim());
+  if (!m) return null;
+  let hour = Number(m[1]) % 12;
+  if (m[3].toUpperCase() === "PM") hour += 12;
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    hour,
+    Number(m[2]),
+  );
 }
 
 function normalizePhoneTo10(phone) {
@@ -161,7 +172,15 @@ export default function DoctorDetail() {
   const slots = useMemo(() => {
     if (!selectedDate || !doctor?.schedule) return [];
     const key = selectedDate.toISOString().split("T")[0];
-    return doctor.schedule && doctor.schedule[key] ? doctor.schedule[key] : [];
+    const all =
+      doctor.schedule && doctor.schedule[key] ? doctor.schedule[key] : [];
+
+    const now = new Date();
+    if (selectedDate.toDateString() !== now.toDateString()) return all;
+    return all.filter((slot) => {
+      const start = slotStart(selectedDate, slot);
+      return start === null || start > now;
+    });
   }, [selectedDate, doctor]);
 
   const handleMobileChange = (value) => {
@@ -513,6 +532,11 @@ export default function DoctorDetail() {
 
                 <div className={doctorDetailStyles.dateScrollContainer}>
                   <div className={doctorDetailStyles.dateButtonsContainer}>
+                    {next7.length === 0 && (
+                      <p className="text-sm text-gray-500 py-2">
+                        No upcoming dates are available for this doctor.
+                      </p>
+                    )}
                     {next7.map((date) => {
                       const isSelected =
                         selectedDate?.toDateString() === date.toDateString();
