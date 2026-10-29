@@ -440,11 +440,21 @@ const doctors = [
 
 async function seed() {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("✅ DB connected");
+    if (!process.argv.includes("--yes")) {
+      console.log(
+        "This script deletes the sample doctors and adds new ones.\n" +
+          "Only run it against a demo or test database, never a real one.\n" +
+          "To continue, run:  node seed.js --yes",
+      );
+      process.exit(0);
+    }
 
-    await Doctor.deleteMany({});
-    console.log("🗑️  Cleared existing doctors");
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("✅ DB connected to database:", mongoose.connection.name);
+
+    const sampleEmails = doctors.map((d) => d.email);
+    const removed = await Doctor.deleteMany({ email: { $in: sampleEmails } });
+    console.log(`🗑️  Cleared ${removed.deletedCount} previous sample doctors`);
 
     const hashedPassword = await bcrypt.hash("Doctor@123", 10);
 
@@ -456,7 +466,9 @@ async function seed() {
 
     await Doctor.insertMany(docs);
     console.log(` Inserted ${docs.length} doctors successfully`);
-    console.log(" All demo doctors share the password: Doctor@123 (demo only, never use it in production)");
+    console.log(
+      " All demo doctors share the password: Doctor@123 (demo only, never use it in production)",
+    );
 
     await mongoose.disconnect();
     console.log(" Done! Go to localhost:5173/doctors to see them.");
