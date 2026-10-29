@@ -139,6 +139,7 @@ export default function AnimatedDoctorListResponsive({ apiBase }) {
   }, [API_BASE]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchDoctors();
   }, [fetchDoctors]);
 

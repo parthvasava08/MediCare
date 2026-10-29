@@ -33,7 +33,6 @@ export default function ListServicePage({ apiBase }) {
     position = "bottom-right",
     animated = false,
   ) {
-    // eslint-disable-next-line react-hooks/purity
     const id = Date.now() + Math.random();
     setToasts((t) => [...t, { id, message, type, position, animated }]);
     setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), ttl);
@@ -111,6 +110,7 @@ export default function ListServicePage({ apiBase }) {
 
     return arr;
   }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   async function fetchServices() {
     try {
       const res = await fetch(`${API_BASE}/api/services`);
@@ -150,12 +150,12 @@ export default function ListServicePage({ apiBase }) {
       addToast("Network error while loading services", "error");
       setServices([]);
     }
-  };
+  }
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchServices();
-  }, []);
+  }, [fetchServices]);
 
   function convertSlotsForUI(slotStrings = []) {
     return (slotStrings || []).map((s, idx) => {
@@ -402,7 +402,7 @@ export default function ListServicePage({ apiBase }) {
 
       // block past date/time
       const slotTs = slotDateTimeToMs(slot);
-      // eslint-disable-next-line react-hooks/purity
+
       if (slotTs <= Date.now()) {
         return {
           valid: false,
