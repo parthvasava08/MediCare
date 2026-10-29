@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import validator from "validator";
 import Appointment from "../models/Appointment.js";
 import Doctor from "../models/Doctor.js";
+import { isPastSlot } from "../utils/slottime.js";
 import dotenv from "dotenv";
 import { getAuth, clerkClient } from "@clerk/express";
 dotenv.config();
@@ -129,12 +130,10 @@ export const getAppointmentsByPatient = async (req, res) => {
     return res.json({ success: true, appointments });
   } catch (err) {
     console.error("Error in getAppointmentsByPatient:", err);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Server error while fetching appointments",
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Server error while fetching appointments",
+    });
   }
 };
 
@@ -165,20 +164,31 @@ export const createAppointment = async (req, res) => {
         .json({ success: false, message: "Authentication required (Clerk)" });
 
     if (!doctorId || !patientName || !mobile || !date || !time) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "doctorId, patientName, mobile, date and time are required",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "doctorId, patientName, mobile, date and time are required",
+      });
     }
     if (!validator.isMobilePhone(String(mobile), "any")) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "mobile is not a valid phone number",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "mobile is not a valid phone number",
+      });
+    }
+
+    const slotState = isPastSlot(date, time);
+    if (slotState === null) {
+      return res.status(400).json({
+        success: false,
+        message: "date must look like 2026-10-20 and time like 10:30 AM",
+      });
+    }
+    if (slotState) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "This time slot has already passed. Please choose a later date or time.",
+      });
     }
 
     const existingBooking = await Appointment.findOne({
@@ -215,12 +225,10 @@ export const createAppointment = async (req, res) => {
         doctorId,
         doctor.fee,
       );
-      return res
-        .status(500)
-        .json({
-          success: false,
-          message: "Doctor fee is misconfigured. Contact support.",
-        });
+      return res.status(500).json({
+        success: false,
+        message: "Doctor fee is misconfigured. Contact support.",
+      });
     }
 
     let resolvedOwner = ownerFromBody || doctor.owner || null;
@@ -311,13 +319,11 @@ export const createAppointment = async (req, res) => {
 
     const frontBase = buildFrontendBase(req);
     if (!frontBase) {
-      return res
-        .status(500)
-        .json({
-          success: false,
-          message:
-            "Frontend URL could not be determined. Set FRONTEND_URL or send Origin header.",
-        });
+      return res.status(500).json({
+        success: false,
+        message:
+          "Frontend URL could not be determined. Set FRONTEND_URL or send Origin header.",
+      });
     }
 
     const successUrl = `${frontBase}/appointment/success?session_id={CHECKOUT_SESSION_ID}`;
@@ -357,12 +363,10 @@ export const createAppointment = async (req, res) => {
       console.error("Stripe create session error:", stripeErr);
       const message =
         stripeErr?.raw?.message || stripeErr?.message || "Stripe error";
-      return res
-        .status(502)
-        .json({
-          success: false,
-          message: `Payment provider error: ${message}`,
-        });
+      return res.status(502).json({
+        success: false,
+        message: `Payment provider error: ${message}`,
+      });
     }
 
     try {
@@ -375,21 +379,17 @@ export const createAppointment = async (req, res) => {
         },
         status: "Pending",
       });
-      return res
-        .status(201)
-        .json({
-          success: true,
-          appointment: created,
-          checkoutUrl: session.url || null,
-        });
+      return res.status(201).json({
+        success: true,
+        appointment: created,
+        checkoutUrl: session.url || null,
+      });
     } catch (dbErr) {
       console.error("DB error saving appointment after stripe session:", dbErr);
-      return res
-        .status(500)
-        .json({
-          success: false,
-          message: "Failed to create appointment record",
-        });
+      return res.status(500).json({
+        success: false,
+        message: "Failed to create appointment record",
+      });
     }
   } catch (err) {
     console.error("createAppointment unexpected:", err);
@@ -488,12 +488,10 @@ export const confirmPayment = async (req, res) => {
     const appt = await reconcileAppointmentFromSession(session);
 
     if (!appt) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Appointment not found for this payment session",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found for this payment session",
+      });
     }
 
     return res.json({ success: true, appointment: appt });
@@ -518,22 +516,18 @@ export const updateAppointment = async (req, res) => {
       !req.doctor ||
       String(req.doctor._id || req.doctor.id) !== String(appt.doctorId)
     ) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Not authorized to update this appointment",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to update this appointment",
+      });
     }
 
     const terminal = appt.status === "Completed" || appt.status === "Canceled";
     if (terminal && body.status && body.status !== appt.status) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Cannot change status of a completed/canceled appointment",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Cannot change status of a completed/canceled appointment",
+      });
     }
 
     const update = {};
@@ -542,12 +536,10 @@ export const updateAppointment = async (req, res) => {
 
     if (body.date && body.time) {
       if (appt.status === "Completed" || appt.status === "Canceled") {
-        return res
-          .status(400)
-          .json({
-            success: false,
-            message: "Cannot reschedule completed/canceled appointment",
-          });
+        return res.status(400).json({
+          success: false,
+          message: "Cannot reschedule completed/canceled appointment",
+        });
       }
       update.date = body.date;
       update.time = body.time;
@@ -605,7 +597,7 @@ export const updateAppointmentStatusAdmin = async (req, res) => {
         statusUpdatedBy: "admin",
         statusUpdatedByAdminId: req.adminUserId || null,
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     )
       .populate({ path: "doctorId", select: "name imageUrl" })
       .lean();
@@ -674,12 +666,10 @@ export const getAppointmentsByDoctor = async (req, res) => {
       !req.doctor ||
       String(req.doctor._id || req.doctor.id) !== String(doctorId)
     ) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Not authorized to view this doctor's appointments",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to view this doctor's appointments",
+      });
     }
 
     const {
