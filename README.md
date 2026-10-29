@@ -6,14 +6,13 @@ MediCare lets patients find a doctor, book an appointment and pay online. Doctor
 
 ## At a glance
 
-| | |
-|---|---|
-| Type | Full-stack MERN (MongoDB, Express, React, Node.js) |
-| Apps | Patient site with doctor portal, admin panel, REST API |
-| API | 35 endpoints, 4 database collections |
-| Auth | Clerk for patients and admins, email and password with JWT for doctors |
-| Payments | Stripe Checkout, confirmed by a signed webhook |
-| Tests | 23 backend tests in 6 files |
+|          |                                                                        |
+| -------- | ---------------------------------------------------------------------- |
+| Type     | Full-stack MERN (MongoDB, Express, React, Node.js)                     |
+| Apps     | Patient site with doctor portal, admin panel, REST API                 |
+| API      | 35 endpoints, 4 database collections                                   |
+| Auth     | Clerk for patients and admins, email and password with JWT for doctors |
+| Payments | Stripe Checkout, confirmed by a signed webhook                         |
 
 ## Features
 
@@ -48,11 +47,11 @@ The frontends never touch the database. They only call the API, and the API deci
 
 ## Roles and authentication
 
-| Role | Signs in with | Enforced by |
-|---|---|---|
-| Patient | Clerk | Clerk session read on the server; bookings are tied to the Clerk user id |
-| Doctor | Email and password, then a JWT (7 days) | `doctorAuth` middleware plus an ownership check on every record |
-| Admin | Clerk, and the account must be on an allowlist | `adminAuth` middleware checking `ADMIN_CLERK_USER_IDS` |
+| Role    | Signs in with                                  | Enforced by                                                              |
+| ------- | ---------------------------------------------- | ------------------------------------------------------------------------ |
+| Patient | Clerk                                          | Clerk session read on the server; bookings are tied to the Clerk user id |
+| Doctor  | Email and password, then a JWT (7 days)        | `doctorAuth` middleware plus an ownership check on every record          |
+| Admin   | Clerk, and the account must be on an allowlist | `adminAuth` middleware checking `ADMIN_CLERK_USER_IDS`                   |
 
 Every permission is checked on the server, not only hidden in the interface.
 
@@ -96,14 +95,6 @@ cd frontend && cp .env.example .env && npm install && npm run dev
 # 3. admin panel
 cd admin && cp .env.example .env && npm install && npm run dev
 ```
-
-## Tests
-
-```bash
-cd backend && npm test
-```
-
-They cover IDOR, JWT revocation, patient identity, price tampering, password reset and validation.
 
 ## Bugs found and fixed during review
 
