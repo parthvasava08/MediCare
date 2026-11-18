@@ -6,14 +6,27 @@ const Doctors = lazy(() => import("./pages/Doctors"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Service = lazy(() => import("./pages/Service"));
 const DoctorDetail = lazy(() => import("./pages/DoctorDetail"));
-const ServiceDetailPage = lazy(
-  () => import("./pages/ServiceDetailPage"),
+const PoliciesIndex = lazy(() => import("./pages/policies/PoliciesIndex"));
+const PrivacyPolicy = lazy(() => import("./pages/policies/PrivacyPolicy"));
+const TermsAndConditions = lazy(
+  () => import("./pages/policies/TermsAndConditions"),
 );
+const AppointmentPolicy = lazy(
+  () => import("./pages/policies/AppointmentPolicy"),
+);
+const PaymentRefundPolicy = lazy(
+  () => import("./pages/policies/PaymentRefundPolicy"),
+);
+const PatientRightsPolicy = lazy(
+  () => import("./pages/policies/PatientRightsPolicy"),
+);
+const MedicalDisclaimer = lazy(
+  () => import("./pages/policies/MedicalDisclaimer"),
+);
+const ServiceDetailPage = lazy(() => import("./pages/ServiceDetailPage"));
 const Appointments = lazy(() => import("./pages/Appointments"));
 const Login = lazy(() => import("./pages/Login"));
-const ForgotPassword = lazy(
-  () => import("./pages/ForgotPassword"),
-);
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 const DHome = lazy(() => import("./pages/DHome"));
@@ -26,10 +39,6 @@ const VerifyServicePaymentPage = lazy(
   () => import("./pages/VerifyServicePaymentPage"),
 );
 
-// Doctor portal guard. The doctor session is a JWT kept in localStorage; without
-// a valid (present and unexpired) token every API call on these pages comes back
-// "token missing" / 401. Send the visitor to the login page instead of showing
-// a page full of errors.
 const DOCTOR_TOKEN_KEY = "doctorToken_v1";
 function hasValidDoctorToken() {
   try {
@@ -133,6 +142,25 @@ const App = () => {
             <Route path="/services/:id" element={<ServiceDetailPage />} />
             <Route path="/appointments" element={<Appointments />} />
             <Route path="/doctor-admin/login" element={<Login />} />
+            <Route path="/policies" element={<PoliciesIndex />} />
+            <Route path="/policies/privacy" element={<PrivacyPolicy />} />
+            <Route path="/policies/terms" element={<TermsAndConditions />} />
+            <Route
+              path="/policies/appointments"
+              element={<AppointmentPolicy />}
+            />
+            <Route
+              path="/policies/payments-refunds"
+              element={<PaymentRefundPolicy />}
+            />
+            <Route
+              path="/policies/patient-rights"
+              element={<PatientRightsPolicy />}
+            />
+            <Route
+              path="/policies/medical-disclaimer"
+              element={<MedicalDisclaimer />}
+            />
             <Route
               path="/doctor-admin/forgot-password"
               element={<ForgotPassword />}
