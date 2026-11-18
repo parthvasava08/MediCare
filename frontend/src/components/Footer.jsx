@@ -13,6 +13,7 @@ import {
   Activity,
 } from "lucide-react";
 import logo from "../assets/logo.png";
+import { policyList } from "../policies/policyList";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -235,6 +236,17 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-center lg:justify-between items-center gap-4 md:gap-6 border-t border-emerald-100 pt-6">
           <div className="text-emerald-700 text-sm md:text-base font-medium flex items-center gap-2">
             <span>© {currentYear} MediCare Healthcare.</span>
+            <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-emerald-700">
+              {policyList.map((p) => (
+                <a
+                  key={p.path}
+                  href={p.path}
+                  className="hover:text-emerald-900 hover:underline"
+                >
+                  {p.title}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </div>
